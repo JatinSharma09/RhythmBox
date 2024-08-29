@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music App</title>
+    <title>RhythmBox</title>
     <link rel="icon" href="../Assets/disc-3.svg" type="image/x-icon" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="output.css">
 </head>
 
-<body class="text-white m-0 p-0">
-    <div class="app-container flex w-full">
-        <div class="side-nav bg-[#212124] flex flex-col h-auto w-[17%] gap-7 p-2 ">
+<body class="text-white m-0 p-0 bg-[#171719] overscroll-none" style="::-webkit-scrollbar { width: 7px; display: none;}">
+    <div class="app-container flex w-full h-full">
+        <div class="hidden bg-[#212124] md:flex p-2 md:flex-col md:h-auto md:w-[17%] md:gap-7" id="navbar">
             <div class="upper-nav">
                 <div
                     class="profile h-12 w-[216px] flex justify-between p-3 mt-1 border-none rounded-lg hover:bg-[#4C4E54]">
@@ -20,18 +20,23 @@
                 </div>
             </div>
             <div class="nav-section-1">
-                <div class="p-3 border-none rounded-lg leading-6 hover:bg-[#4c4e54]">Home</div>
-                <div class="p-3 border-none rounded-lg leading-6 hover:bg-[#4c4e54]">Explore</div>
-                <div class="p-3 border-none rounded-lg leading-6 hover:bg-[#4c4e54]">Videos</div>
+                <a href="#">
+                    <div class="p-3 border-none rounded-lg leading-6 hover:bg-[#4c4e54]">Home</div>
+                </a>
+                <a href="#">
+                    <div class="p-3 border-none rounded-lg leading-6 hover:bg-[#4c4e54]">Explore</div>
+                </a>
+                <!-- <div class="p-3 border-none rounded-lg leading-6 hover:bg-[#4c4e54]">Videos</div> -->
             </div>
             <!-- my collection section  -->
             <div class="nav-section-2">
                 <div class="text-xs text-[#9898A6] font-medium leading">MY COLLECTIONS</div>
-                <div class="flex px-3 py-2 mt-1 gap-2 rounded-lg hover:bg-[#4c4e54]">
-                    <img src="../Assets/Icon-Playlists.svg" class="" alt="icon" /><label class="">Playlists</label>
-                </div>
-
-                <div class="flex px-3 py-2 gap-2 rounded-lg hover:bg-[#4c4e54]">
+                <a href="./playlists.html">
+                    <div class="flex px-3 py-2 mt-1 gap-2 rounded-lg hover:bg-[#4c4e54]">
+                        <img src="../Assets/Icon-Playlists.svg" class="" alt="icon" /><label class="">Playlists</label>
+                    </div>
+                </a>
+                <!-- <div class="flex px-3 py-2 gap-2 rounded-lg hover:bg-[#4c4e54]">
                     <img src="../Assets/Icon-Albums.svg" class="" alt="icon" /><label class="">Albums</label>
                 </div>
 
@@ -41,11 +46,11 @@
 
                 <div class="flex px-3 py-2 gap-2 rounded-lg hover:bg-[#4c4e54]">
                     <img src="../Assets/Icon-Artists.svg" class="" alt="icon" /><label class="">Artists</label>
-                </div>
+                </div> -->
             </div>
 
             <!-- my playlist section  -->
-            <div class="nav-section-3">
+            <!-- <div class="nav-section-3">
                 <div class="text-xs text-[#9898A6] font-medium leading">MY PLAYLISTS</div>
                 <div class="flex px-3 py-2 mt-1 rounded-lg hover:bg-[#4c4e54]">
                     <label class="ml-1">Trending Today</label>
@@ -62,6 +67,27 @@
                 <div class="flex px-3 py-2 rounded-lg hover:bg-[#4c4e54]">
                     <label class="ml-1">Indie Pop</label>
                 </div>
+            </div> -->
+        </div>
+
+        <div class="mobile-nav w-full flex items-center justify-around p-3 fixed bottom-0 md:hidden bg-black">
+            <div class="">
+                <a href="#" class="flex flex-col justify-center items-center">
+                    <img src="../Assets/Search.svg" alt="" srcset="" class="h-8 w-8"> 
+                    <div class="p-3 border-none rounded-lg leading-6 ">Home</div>
+                </a>
+            </div>
+            <div class="">
+                <a href="#" class="flex flex-col justify-center items-center">
+                    <img src="../Assets/Icon-Playlists.svg" alt="" srcset="" class="h-8 w-8"> 
+                    <div class="p-3 border-none rounded-lg leading-6">Playlist</div>
+                </a>
+            </div>
+            <div class="">
+                <a href="#" class="flex flex-col justify-center items-center">
+                    <img src="../Assets/Icon-Queue.svg" alt="" srcset="" class="h-8 w-8"> 
+                    <div class="p-3 border-none rounded-lg leading-6">Queue</div>
+                </a>
             </div>
         </div>
 
@@ -69,31 +95,36 @@
             <!-- top nav  -->
             <div class="top-nav flex py-4 justify-between">
                 <div class="flex gap-2 ml-[52px] ">
-                    <div class="h-10 w-10 bg-[#1F1F22] rounded-[50%] flex justify-center items-center">
+                    <div class="h-10 w-10 bg-[#1F1F22] rounded-[50%] flex justify-center items-center hover:scale-125">
                         <img src="../Assets/Icon-Arrow-Left.svg" alt="left-arrow" class="h-4 w-4" />
                     </div>
 
-                    <div class="h-10 w-10 bg-[#1F1F22] rounded-[50%] flex justify-center items-center">
+                    <div class="h-10 w-10 bg-[#1F1F22] rounded-[50%] flex justify-center items-center hover:scale-125"
+                        id="playlistShow">
                         <img src="../Assets/Icon-Arrow-Right.svg" alt="right-arrow" class="h-4 w-4" />
                     </div>
                 </div>
                 <div class="flex mr-[3%] items-center mt-1 gap-3">
                     <div class="search-bar relative ">
-                        <input type="text" placeholder="Search" id="search-box" autocomplete=""
+                        <input type="text" placeholder="Search" id="search-box"
                             class="h-9 w-[365px] rounded-xl outline-none p-3 bg-[#1F1F22] border border-[#ebebff10] pl-8 text-[14px] font-normal text-[#ffffff]" />
                         <div class="absolute inset-y-0 left-0 pl-2 flex items-center">
                             <img src="../Assets/Search.svg" class="h-4 w-4" />
                         </div>
+                        <ul id="suggestions"
+                            class="absolute bg-[#303031] w-full p-2 rounded-lg shadow-lg mt-1 max-h-40 overflow-y-auto z-10 hidden">
+                        </ul>
                     </div>
 
                     <div class="h-10 w-10 bg-[#1F1F22] rounded-[50%] flex justify-center items-center">
-                        <img src="../Assets/Icon-Arrow-Left.svg" alt="left-arrow" class="h-4 w-4 " />
+                        <img src="../Assets/Icon-Arrow-Left.svg" alt="left-arrow" class="h-4 w-4 " id="search-btn" />
                     </div>
                 </div>
+
             </div>
 
             <!-- slider for you -->
-            <div class="slider-for-you m-4  mx-auto w-[1200px]">
+            <div class="slider-for-you m-4  mx-auto w-full">
                 <!-- slider nav  -->
                 <div class="flex justify-between">
                     <div class="slider-nav">
@@ -101,19 +132,24 @@
                     </div>
 
                     <div class="flex items-center mr-3 gap-2">
-                        <div class="h-6 w-6 bg-[#1F1F22] rounded-[50%] flex justify-center items-center">
-                            <img src="../Assets/Icon-Arrow-Left.svg" alt="left-arrow" class="h-4 w-4" id="prev-button"/>
+                        <div
+                            class="h-6 w-6 bg-[#1F1F22] rounded-[50%] flex justify-center items-center hover:scale-125">
+                            <img src="../Assets/Icon-Arrow-Left.svg" alt="left-arrow" class="h-4 w-4"
+                                id="prev-button" />
                         </div>
 
-                        <div class="h-6 w-6 bg-[#1F1F22] rounded-[50%] flex justify-center items-center">
-                            <img src="../Assets/Icon-Arrow-Right.svg" alt="right-arrow" class="h-4 w-4" id="next-button"/>
+                        <div
+                            class="h-6 w-6 bg-[#1F1F22] rounded-[50%] flex justify-center items-center hover:scale-125">
+                            <img src="../Assets/Icon-Arrow-Right.svg" alt="right-arrow" class="h-4 w-4"
+                                id="next-button" />
                         </div>
                     </div>
                 </div>
 
                 <!-- slider cards -->
                 <div class="overflow-hidden relative mt-2">
-                    <div class="scroll-container flex flex-nowrap transition-transform duration-300 ease-in-out" id="cards-container">
+                    <div class="scroll-container flex flex-nowrap transition-transform duration-300 ease-in-out"
+                        id="cards-container">
                         <!-- card 1 -->
                         <div class="h-[390px] w-[275px] card flex-shrink-0">
                             <div class="mt-2 ml-8 relative">
@@ -123,6 +159,7 @@
                                     <img src="../Assets/Icon-Play-Filled.svg" alt="right-arrow" class="h-6 w-6 btn-1"
                                         id="id-0" />
                                 </div>
+
                             </div>
 
                             <div class="h-[110px] ml-8 rounded-b-lg "
@@ -208,148 +245,12 @@
                             </div>
                         </div>
                         <!-- card 5 -->
-                        <div class="h-[390px] w-[275px] card flex-shrink-0">
-                            <div class="mt-2 ml-6 relative">
-                                <img src="../Assets/../Assets/Image-for-you (2).jpg" alt="image-1" class="rounded-t-lg"
-                                    id="card-i-4">
-                                <div
-                                    class="h-10 w-10 bg-white rounded-[50%] flex justify-center items-center absolute bottom-4 right-4">
-                                    <img src="../Assets/Icon-Play-Filled.svg" alt="right-arrow" class="h-6 w-6 btn-4"
-                                        id="id-4" />
-                                </div>
-                            </div>
 
-                            <div class="h-[110px] ml-6 rounded-b-lg "
-                                style="background-image: url('../Assets/Image-for-you (2).jpg');" id="card-b-4">
-                                <div class="backdrop-blur-xl bg-black/50 h-full rounded-b-lg p-3">
-                                    <span class="block text-[10px] font-semibold text-cyan-400">NEW TRACK FOR YOU</span>
-                                    <span class="block text-[18px] font-semibold mt-1" id="card-sn-4">My New
-                                        Arrivals</span>
-                                    <p class="block text-[14px] font-semibold text-[#9898A6]" id="card-a-4">Album by XS
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- card 6 -->
-                        <div class="h-[390px] w-[275px] card flex-shrink-0">
-                            <div class="mt-2 ml-6 relative">
-                                <img src="../Assets/../Assets/Image-for-you (2).jpg" alt="image-1" class="rounded-t-lg"
-                                    id="card-i-5">
-                                <div
-                                    class="h-10 w-10 bg-white rounded-[50%] flex justify-center items-center absolute bottom-4 right-4">
-                                    <img src="../Assets/Icon-Play-Filled.svg" alt="right-arrow" class="h-6 w-6 btn-4"
-                                        id="id-5" />
-                                </div>
-                            </div>
-
-                            <div class="h-[110px] ml-6 rounded-b-lg "
-                                style="background-image: url('../Assets/Image-for-you (2).jpg');" id="card-b-5">
-                                <div class="backdrop-blur-xl bg-black/50 h-full rounded-b-lg p-3">
-                                    <span class="block text-[10px] font-semibold text-cyan-400">NEW TRACK FOR YOU</span>
-                                    <span class="block text-[18px] font-semibold mt-1" id="card-sn-5">My New
-                                        Arrivals</span>
-                                    <p class="block text-[14px] font-semibold text-[#9898A6]" id="card-a-5">Album by XS
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- card 7 -->
-                        <div class="h-[390px] w-[275px] card flex-shrink-0">
-                            <div class="mt-2 ml-6 relative">
-                                <img src="../Assets/../Assets/Image-for-you (2).jpg" alt="image-1" class="rounded-t-lg"
-                                    id="card-i-6">
-                                <div
-                                    class="h-10 w-10 bg-white rounded-[50%] flex justify-center items-center absolute bottom-4 right-4">
-                                    <img src="../Assets/Icon-Play-Filled.svg" alt="right-arrow" class="h-6 w-6 btn-4"
-                                        id="id-6" />
-                                </div>
-                            </div>
-
-                            <div class="h-[110px] ml-6 rounded-b-lg "
-                                style="background-image: url('../Assets/Image-for-you (2).jpg');" id="card-b-6">
-                                <div class="backdrop-blur-xl bg-black/50 h-full rounded-b-lg p-3">
-                                    <span class="block text-[10px] font-semibold text-cyan-400">NEW TRACK FOR YOU</span>
-                                    <span class="block text-[18px] font-semibold mt-1" id="card-sn-6">My New
-                                        Arrivals</span>
-                                    <p class="block text-[14px] font-semibold text-[#9898A6]" id="card-a-6">Album by XS
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- card 8 -->
-                        <div class="h-[390px] w-[275px] card flex-shrink-0">
-                            <div class="mt-2 ml-6 relative">
-                                <img src="../Assets/../Assets/Image-for-you (2).jpg" alt="image-1" class="rounded-t-lg"
-                                    id="card-i-7">
-                                <div
-                                    class="h-10 w-10 bg-white rounded-[50%] flex justify-center items-center absolute bottom-4 right-4">
-                                    <img src="../Assets/Icon-Play-Filled.svg" alt="right-arrow" class="h-6 w-6 btn-4"
-                                        id="id-7" />
-                                </div>
-                            </div>
-
-                            <div class="h-[110px] ml-6 rounded-b-lg "
-                                style="background-image: url('../Assets/Image-for-you (2).jpg');" id="card-b-7">
-                                <div class="backdrop-blur-xl bg-black/50 h-full rounded-b-lg p-3">
-                                    <span class="block text-[10px] font-semibold text-cyan-400">NEW TRACK FOR YOU</span>
-                                    <span class="block text-[18px] font-semibold mt-1" id="card-sn-7">My New
-                                        Arrivals</span>
-                                    <p class="block text-[14px] font-semibold text-[#9898A6]" id="card-a-7">Album by XS
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- card 9 -->
-                        <div class="h-[390px] w-[275px] card flex-shrink-0">
-                            <div class="mt-2 ml-6 relative">
-                                <img src="../Assets/../Assets/Image-for-you (2).jpg" alt="image-1" class="rounded-t-lg"
-                                    id="card-i-8">
-                                <div
-                                    class="h-10 w-10 bg-white rounded-[50%] flex justify-center items-center absolute bottom-4 right-4">
-                                    <img src="../Assets/Icon-Play-Filled.svg" alt="right-arrow" class="h-6 w-6 btn-4"
-                                        id="id-8" />
-                                </div>
-                            </div>
-
-                            <div class="h-[110px] ml-6 rounded-b-lg "
-                                style="background-image: url('../Assets/Image-for-you (2).jpg');" id="card-b-8">
-                                <div class="backdrop-blur-xl bg-black/50 h-full rounded-b-lg p-3">
-                                    <span class="block text-[10px] font-semibold text-cyan-400">NEW TRACK FOR YOU</span>
-                                    <span class="block text-[18px] font-semibold mt-1" id="card-sn-8">My New
-                                        Arrivals</span>
-                                    <p class="block text-[14px] font-semibold text-[#9898A6]" id="card-a-8">Album by XS
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- card 10 -->
-                        <div class="h-[390px] w-[275px] card flex-shrink-0">
-                            <div class="mt-2 ml-6 relative">
-                                <img src="../Assets/../Assets/Image-for-you (2).jpg" alt="image-1" class="rounded-t-lg"
-                                    id="card-i-9">
-                                <div
-                                    class="h-10 w-10 bg-white rounded-[50%] flex justify-center items-center absolute bottom-4 right-4">
-                                    <img src="../Assets/Icon-Play-Filled.svg" alt="right-arrow" class="h-6 w-6 btn-4"
-                                        id="id-9" />
-                                </div>
-                            </div>
-
-                            <div class="h-[110px] ml-6 rounded-b-lg "
-                                style="background-image: url('../Assets/Image-for-you (2).jpg');" id="card-b-9">
-                                <div class="backdrop-blur-xl bg-black/50 h-full rounded-b-lg p-3">
-                                    <span class="block text-[10px] font-semibold text-cyan-400">NEW TRACK FOR YOU</span>
-                                    <span class="block text-[18px] font-semibold mt-1" id="card-sn-9">My New
-                                        Arrivals</span>
-                                    <p class="block text-[14px] font-semibold text-[#9898A6]" id="card-a-9">Album by XS
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
                 <!-- second section -->
-                <div class="second-section">
+                <div class="second-section" id="second-section">
                     <div class="flex justify-between">
                         <div class="slider-nav">
                             <label class="ml-8 text-center text-lg font-semibold">Playlists</label>
@@ -368,75 +269,98 @@
 
                     <div class="cards-container flex">
                         <!-- card 1 -->
-                        <div class="h-[276px] w-[200px]">
+                        <div class="h-[276px] w-[200px]" id="playlist-card-0">
                             <div class="ml-8 mt-4 ">
                                 <img src="../Assets/Image-thumb.jpg" alt="Image-Thumb" class="rounded-md" id="play-i-0">
                             </div>
                             <div class="ml-8 mt-2">
-                                <label class="block font-semibold text-[14px]" id="play-name-0">My Daily Discovery</label>
-                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-0">Songs by new and
+                                <label class="block font-semibold text-[14px]" id="play-name-0">My Daily
+                                    Discovery</label>
+                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-0">Songs
+                                    by new and
                                     familiar art</label>
-                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]" id="play-sc-0">Label</label>
+                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]"
+                                    id="play-sc-0">Label</label>
                             </div>
                         </div>
                         <!-- card 2 -->
-                        <div class="h-[276px] w-[200px]">
+                        <div class="h-[276px] w-[200px]" id="playlist-card-1">
                             <div class="ml-8 mt-4 ">
-                                <img src="../Assets/Image-thumb (1).jpg" alt="Image-Thumb" class="rounded-md" id="play-i-1">
+                                <img src="../Assets/Image-thumb (1).jpg" alt="Image-Thumb" class="rounded-md"
+                                    id="play-i-1">
                             </div>
                             <div class="ml-8 mt-2">
-                                <label class="block font-semibold text-[14px]" id="play-name-1">My Daily Discovery</label>
-                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-1">Songs by new and
+                                <label class="block font-semibold text-[14px]" id="play-name-1">My Daily
+                                    Discovery</label>
+                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-1">Songs
+                                    by new and
                                     familiar art</label>
-                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]" id="play-sc-1">Label</label>
+                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]"
+                                    id="play-sc-1">Label</label>
                             </div>
                         </div>
                         <!-- card 3 -->
-                        <div class="h-[276px] w-[200px]">
+                        <div class="h-[276px] w-[200px]" id="playlist-card-2">
                             <div class="ml-8 mt-4 ">
-                                <img src="../Assets/Image-thumb (2).jpg" alt="Image-Thumb" class="rounded-md" id="play-i-2">
+                                <img src="../Assets/Image-thumb (2).jpg" alt="Image-Thumb" class="rounded-md"
+                                    id="play-i-2">
                             </div>
                             <div class="ml-8 mt-2">
-                                <label class="block font-semibold text-[14px]" id="play-name-2">My Daily Discovery</label>
-                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-2">Songs by new and
+                                <label class="block font-semibold text-[14px]" id="play-name-2">My Daily
+                                    Discovery</label>
+                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-2">Songs
+                                    by new and
                                     familiar art</label>
-                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]" id="play-sc-2">Label</label>
+                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]"
+                                    id="play-sc-2">Label</label>
                             </div>
                         </div>
                         <!-- card 4 -->
-                        <div class="h-[276px] w-[200px]">
+                        <div class="h-[276px] w-[200px]" id="playlist-card-3">
                             <div class="ml-8 mt-4 ">
-                                <img src="../Assets/Image-thumb (3).jpg" alt="Image-Thumb" class="rounded-md" id="play-i-3">
+                                <img src="../Assets/Image-thumb (3).jpg" alt="Image-Thumb" class="rounded-md"
+                                    id="play-i-3">
                             </div>
                             <div class="ml-8 mt-2">
-                                <label class="block font-semibold text-[14px]" id="play-name-3">My Daily Discovery</label>
-                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-3">Songs by new and
+                                <label class="block font-semibold text-[14px]" id="play-name-3">My Daily
+                                    Discovery</label>
+                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-3">Songs
+                                    by new and
                                     familiar art</label>
-                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]" id="play-sc-3">Label</label>
+                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]"
+                                    id="play-sc-3">Label</label>
                             </div>
                         </div>
                         <!-- card 5 -->
-                        <div class="h-[276px] w-[200px]">
+                        <div class="h-[276px] w-[200px]" id="playlist-card-4">
                             <div class="ml-8 mt-4 ">
-                                <img src="../Assets/Image-thumb (4).jpg" alt="Image-Thumb" class="rounded-md" id="play-i-4">
+                                <img src="../Assets/Image-thumb (4).jpg" alt="Image-Thumb" class="rounded-md"
+                                    id="play-i-4">
                             </div>
                             <div class="ml-8 mt-2">
-                                <label class="block font-semibold text-[14px]" id="play-name-4">My Daily Discovery</label>
-                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-4">Songs by new and
+                                <label class="block font-semibold text-[14px]" id="play-name-4">My Daily
+                                    Discovery</label>
+                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-4">Songs
+                                    by new and
                                     familiar art</label>
-                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]" id="play-sc-4">Label</label>
+                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]"
+                                    id="play-sc-4">Label</label>
                             </div>
                         </div>
                         <!-- card 6 -->
-                        <div class="h-[276px] w-[200px]">
+                        <div class="h-[276px] w-[200px]" id="playlist-card-5">
                             <div class="ml-8 mt-4 ">
-                                <img src="../Assets/Image-thumb (1).jpg" alt="Image-Thumb" class="rounded-md" id="play-i-5">
+                                <img src="../Assets/Image-thumb (1).jpg" alt="Image-Thumb" class="rounded-md"
+                                    id="play-i-5">
                             </div>
                             <div class="ml-8 mt-2">
-                                <label class="block font-semibold text-[14px]" id="play-name-5">My Daily Discovery</label>
-                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-5">Songs by new and
+                                <label class="block font-semibold text-[14px]" id="play-name-5">My Daily
+                                    Discovery</label>
+                                <label class="block font-semibold text-[14px] text-[#fcfcfcb4]" id="play-type-5">Songs
+                                    by new and
                                     familiar art</label>
-                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]" id="play-sc-5">Label</label>
+                                <label class="block font-semibold text-[10px] text-[#fcfcfcb4]"
+                                    id="play-sc-5">Label</label>
                             </div>
                         </div>
                     </div>
@@ -448,37 +372,239 @@
             </div>
         </div>
 
-        <!-- bottom mini player  -->
-        <div class="fixed bottom-0 w-full bg-[#1F1F22] h-[88px]">
-            <div class="px-4 py-3 flex justify-evenly">
-                <!--  album art  -->
-                <div class="flex w-[20%]">
-                    <div class="w-[30%]">
-                        <img src="https://c.saavncdn.com/351/Believers-English-2021-20210503232242-50x50.jpg" alt=""
-                            class="h-[60px] w-[60px] mt-1" id="img-m">
+        <!-- // playlist page content -->
+        <div class="absolute left-[231px] right-0 bg-[#171719] w-full h-[800px] hidden" id="playlist-screen">
+            <div class="main-container bg-[#171719] w-[83%] ">
+                <!-- top nav  -->
+                <div class="top-nav flex py-4 justify-between">
+                    <div class="flex gap-2 ml-[52px] ">
+                        <div
+                            class="h-10 w-10 bg-[#1F1F22] rounded-[50%] flex justify-center items-center hover:scale-125">
+                            <img src="../Assets/Icon-Arrow-Left.svg" alt="left-arrow" class="h-4 w-4"
+                                id="playlistHide" />
+                        </div>
+
+                        <div
+                            class="h-10 w-10 bg-[#1F1F22] rounded-[50%] flex justify-center items-center hover:scale-125">
+                            <img src="../Assets/Icon-Arrow-Right.svg" alt="right-arrow" class="h-4 w-4" />
+                        </div>
                     </div>
-                    <div class="ml-4 mb-1 w-[70%] overflow-hidden">
-                        <label class="block font-semibold text-[14px] w-full whitespace-nowrap"
+                    <div class="flex mr-[3%] items-center mt-1 gap-3">
+                        <div class="search-bar relative ">
+                            <input type="text" placeholder="Search" id="search-box" autocomplete=""
+                                class="h-9 w-[365px] rounded-xl outline-none p-3 bg-[#1F1F22] border border-[#ebebff10] pl-8 text-[14px] font-normal text-[#ffffff]" />
+                            <div class="absolute inset-y-0 left-0 pl-2 flex items-center">
+                                <img src="../Assets/Search.svg" class="h-4 w-4" />
+                            </div>
+                        </div>
+
+                        <div class="h-10 w-10 bg-[#1F1F22] rounded-[50%] flex justify-center items-center">
+                            <img src="../Assets/Icon-Arrow-Left.svg" alt="left-arrow" class="h-4 w-4 " />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="playlist-top flex mx-8 my-2 p-4 gap-8">
+                    <div class="playlist-image">
+                        <img src="../Assets/Image-thumb (1).jpg" alt="Playlist-Image" class="rounded-xl h-60 w-60   "
+                            id="table-play-img">
+                    </div>
+                    <div class="flex flex-col justify-center gap-4">
+                        <div class="font-semibold text-4xl" id="table-play-title">Most Streamed Love Songs: Hindi</div>
+                        <div class="" id="table-play-count">76.8K Followers · 30 Songs</div>
+                    </div>
+                </div>
+
+                <div class="song-table-cards px-11">
+                    <div class="relative overflow-x-auto overflow-y-scroll h-[450px] shadow-md sm:rounded-lg">
+                        <table
+                            class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
+                            <tbody id="songTable">
+                                <!-- row 1 -->
+                                <tr class="bg-[#171719] border-gray-700 hover:bg-gray-600" id="table-row-1">
+                                    <th scope="row"
+                                        class="flex items-center gap-6 px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <img src="../Assets/Image-thumb (1).jpg" alt="img" class="h-10 w-10 rounded-md"
+                                            id="table-img-1">
+                                        <span class="font-medium" id="table-name-1">Aaj ki raat</span>
+                                    </th>
+                                    <td class="px-4 py-2" id="table-artist-1">
+                                        Amitabh Bhattacharya, Aritjit singh
+                                    </td>
+                                    <td class="px-4 py-2" id="table-album-1">
+                                        Stree 2
+                                    </td>
+                                    <td class="px-4 py-2" id="table-dura-1">
+                                        2:28
+                                    </td>
+                                </tr>
+                                <!-- row 2 -->
+                                <tr class="bg-[#171719] border-gray-700 hover:bg-gray-600" id="table-row-2">
+                                    <th scope="row"
+                                        class="flex items-center gap-6 px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <img src="../Assets/Image-thumb (1).jpg" alt="img" class="h-10 w-10 rounded-md"
+                                            id="table-img-2">
+                                        <span class="font-medium" id="table-name-2">Aaj ki raat</span>
+                                    </th>
+                                    <td class="px-4 py-2" id="table-artist-2">
+                                        Amitabh Bhattacharya, Aritjit singh
+                                    </td>
+                                    <td class="px-4 py-2" id="table-album-2">
+                                        Stree 2
+                                    </td>
+                                    <td class="px-4 py-2" id="table-dura-2">
+                                        2:28
+                                    </td>
+                                </tr>
+                                <!-- row 3 -->
+                                <tr class="bg-[#171719] border-gray-700 hover:bg-gray-600" id="table-row-3">
+                                    <th scope="row"
+                                        class="flex items-center gap-6 px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <img src="../Assets/Image-thumb (1).jpg" alt="img" class="h-10 w-10 rounded-md"
+                                            id="table-img-3">
+                                        <span class="font-medium" id="table-name-3">Aaj ki raat</span>
+                                    </th>
+                                    <td class="px-4 py-2" id="table-artist-3">
+                                        Amitabh Bhattacharya, Aritjit singh
+                                    </td>
+                                    <td class="px-4 py-2" id="table-album-3">
+                                        Stree 2
+                                    </td>
+                                    <td class="px-4 py-2" id="table-dura-3">
+                                        2:28
+                                    </td>
+                                </tr>
+                                <!-- row 4 -->
+                                <tr class="bg-[#171719] border-gray-700 hover:bg-gray-600" id="table-row-4">
+                                    <th scope="row"
+                                        class="flex items-center gap-6 px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <img src="../Assets/Image-thumb (1).jpg" alt="img" class="h-10 w-10 rounded-md"
+                                            id="table-img-4">
+                                        <span class="font-medium" id="table-name-4">Aaj ki raat</span>
+                                    </th>
+                                    <td class="px-4 py-2" id="table-artist-4">
+                                        Amitabh Bhattacharya, Aritjit singh
+                                    </td>
+                                    <td class="px-4 py-2" id="table-album-4">
+                                        Stree 2
+                                    </td>
+                                    <td class="px-4 py-2" id="table-dura-4">
+                                        2:28
+                                    </td>
+                                </tr>
+                                <!-- row 5 -->
+                                <tr class="bg-[#171719] border-gray-700 hover:bg-gray-600" id="table-row-5">
+                                    <th scope="row"
+                                        class="flex items-center gap-6 px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <img src="../Assets/Image-thumb (1).jpg" alt="img" class="h-10 w-10 rounded-md"
+                                            id="table-img-5">
+                                        <span class="font-medium" id="table-name-5">Aaj ki raat</span>
+                                    </th>
+                                    <td class="px-4 py-2" id="table-artist-5">
+                                        Amitabh Bhattacharya, Aritjit singh
+                                    </td>
+                                    <td class="px-4 py-2" id="table-album-5">
+                                        Stree 2
+                                    </td>
+                                    <td class="px-4 py-2" id="table-dura-5">
+                                        2:28
+                                    </td>
+                                </tr>
+                                <!-- row 6 -->
+                                <tr class="bg-[#171719] border-gray-700 hover:bg-gray-600" id="table-row-6">
+                                    <th scope="row"
+                                        class="flex items-center gap-6 px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <img src="../Assets/Image-thumb (1).jpg" alt="img" class="h-10 w-10 rounded-md"
+                                            id="table-img-6">
+                                        <span class="font-medium" id="table-name-6">Aaj ki raat</span>
+                                    </th>
+                                    <td class="px-4 py-2" id="table-artist-6">
+                                        Amitabh Bhattacharya, Aritjit singh
+                                    </td>
+                                    <td class="px-4 py-2" id="table-album-6">
+                                        Stree 2
+                                    </td>
+                                    <td class="px-4 py-2" id="table-dura-6">
+                                        2:28
+                                    </td>
+                                </tr>
+                                <!-- row 7 -->
+                                <tr class="bg-[#171719] border-gray-700 hover:bg-gray-600" id="table-row-7">
+                                    <th scope="row"
+                                        class="flex items-center gap-6 px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <img src="../Assets/Image-thumb (1).jpg" alt="img" class="h-10 w-10 rounded-md"
+                                            id="table-img-7">
+                                        <span class="font-medium" id="table-name-7">Aaj ki raat</span>
+                                    </th>
+                                    <td class="px-4 py-2" id="table-artist-7">
+                                        Amitabh Bhattacharya, Aritjit singh
+                                    </td>
+                                    <td class="px-4 py-2" id="table-album-7">
+                                        Stree 2
+                                    </td>
+                                    <td class="px-4 py-2" id="table-dura-7">
+                                        2:28
+                                    </td>
+                                </tr>
+                                <!-- row 8 -->
+                                <tr class="bg-[#171719] border-gray-700 hover:bg-gray-600" id="table-row-8">
+                                    <th scope="row"
+                                        class="flex items-center gap-6 px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <img src="../Assets/Image-thumb (1).jpg" alt="img" class="h-10 w-10 rounded-md"
+                                            id="table-img-8">
+                                        <span class="font-medium" id="table-name-8">Aaj ki raat</span>
+                                    </th>
+                                    <td class="px-4 py-2" id="table-artist-8">
+                                        Amitabh Bhattacharya, Aritjit singh
+                                    </td>
+                                    <td class="px-4 py-2" id="table-album-8">
+                                        Stree 2
+                                    </td>
+                                    <td class="px-4 py-2" id="table-dura-8">
+                                        2:28
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- bottom mini player  -->
+        <div class="fixed bottom-[100px] h-auto md:bottom-0 w-full bg-[#1F1F22] md:h-[88px]">
+            <div class="px-4 py-3 flex justify-between md:justify-evenly">
+                <!--  album art  -->
+                <div class="flex md:w-[20%]">
+                    <div class="w-[40%] md:w-[30%]">
+                        <img src="https://c.saavncdn.com/351/Believers-English-2021-20210503232242-50x50.jpg" alt=""
+                            class="h-24 w-20 md:h-[60px] md:w-[60px] mt-1" id="img-m">
+                    </div>
+                    <div class="ml-4 mb-1 w-[60%] md:w-[70%] overflow-hidden">
+                        <label class="block font-semibold text-[20px] md:text-[14px] w-full whitespace-nowrap"
                             id="audio_title">Angels</label>
-                        <label class="block font-semibold text-[14px] text-[#fcfcfca9] w-full" id="artist_name">The
+                        <label class="block font-semibold text-[20px] md:text-[14px] text-[#fcfcfca9] w-full" id="artist_name">The
                             XX</label>
-                        <label class="block font-semibold text-[10px] text-[#fcfcfca9] mt-1" id="second-artist">PLAING
+                        <label class="hidden md:block font-semibold text-[16px] md:text-[10px] text-[#fcfcfca9] mt-1" id="second-artist">PLAING
                             FROM: Coexist</label>
                     </div>
                 </div>
                 <!--  control icons  -->
-                <div class="flex flex-col justify-center items-center w-[70%]">
+                <div class="flex flex-col justify-center items-center md:w-[70%]">
                     <div class="buttons flex gap-8 justify-center items-center mt-1">
-                        <img src="../Assets/Icon-Shuffle.svg" alt="icon1" class="h-5 w-5">
-                        <img src="../Assets/Icon-Rewind-Filled.svg" alt="icon1" class="h-5 w-5 opacity-100 hover:opacity-50" id="prev">
-                        <img src="../Assets/pause.svg" alt="pause" id="pause" class="h-8 w-8 hover:scale-125 hidden"
+                        <!-- <img src="../Assets/Icon-Shuffle.svg" alt="icon1" class="h-5 w-5"> -->
+                        <img src="../Assets/Icon-Rewind-Filled.svg" alt="icon1"
+                            class="h-8 w-8 md:h-5 md:w-5 opacity-100 hover:opacity-50" id="prev">
+                        <img src="../Assets/pause.svg" alt="pause" id="pause" class="h-12 w-12 md:h-8 md:w-8 hover:scale-125 hidden"
                             onclick="playpause()">
-                        <img src="../Assets/Icon-Play-Filled (1).svg" alt="icon1" class="h-8 w-8 hover:scale-125"
+                        <img src="../Assets/Icon-Play-Filled (1).svg" alt="icon1" class="h-12 w-12 md:h-8 md:w-8 hover:scale-125"
                             onclick="playpause()" id="play">
-                        <img src="../Assets/Icon-Forward-Filled.svg" alt="icon1" class="h-5 w-5 opacity-100 hover:opacity-50" id="nxt">
-                        <img src="../Assets/Icon-Repeat.svg" alt="icon1" class="h-5 w-5">
+                        <img src="../Assets/Icon-Forward-Filled.svg" alt="icon1"
+                            class="h-8 w-8 md:h-5 md:w-5 opacity-100 hover:opacity-50" id="nxt">
+                        <!-- <img src="../Assets/Icon-Repeat.svg" alt="icon1" class="h-5 w-5"> -->
                     </div>
-                    <div class="w-full ml-[35%] mt-2">
+                    <div class="w-full ml-[35%] mt-2 hidden md:block">
                         <audio src="https://aac.saavncdn.com/351/673520a145f6c7a09987ff9a7294527d_160.mp4" controls
                             class="w-20 h-8 hidden" id="audio1">
                         </audio>
@@ -488,15 +614,105 @@
                     </div>
                 </div>
                 <!-- voloume and other plugins -->
-                <div class="flex justify-center items-center w-[10%] gap-12">
-                    <div>
+                <div class="flex justify-center items-center w-auto md:w-[10%] gap-12">
+                    <div class="hidden md:block">
                         <img src="../Assets/Icon-Volume.svg" alt="icon2" onclick="volume()" id="volume_icn"
                             class="p-2 hover:bg-slate-500 rounded-xl">
                         <input type="range" id="volume" min="0" max="100" value="0"
                             class="slider -rotate-90 absolute bottom-[88px] right-5 hidden" />
                     </div>
                     <div>
-                        <img src="../Assets/Icon-Queue.svg" alt="icon2">
+                        <img src="../Assets/picture-in-picture-2.svg" alt="icon2" id="full-screen"
+                            class="p-2 hover:bg-slate-500 rounded-xl transition-transform ease-in-out">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- full screen -->
+        <div class="hidden" id="full-screen-player">
+            <div class="full-screen-player flex absolute right-0 left-0 bottom-20  h-full w-full bg-[#1F1F22] ">
+                <div class="song-details absolute bottom-14 left-10 gap-2 flex">
+                    <div class="song-pic">
+                        <img src="../Assets/Image-for-you (1).jpg" alt="img1" class="rounded-2xl h-80 w-80"
+                            id="full-screen-img">
+                    </div>
+                    <div class="song-details-text p-2">
+                        <h1 id="full-song-name" class="font-medium text-2xl">Song Name</h1>
+                        <h2 id="full-song-artist">Artists</h2>
+
+                        <div class="flex gap-4 mt-48 justify-center items-center overflow-x-hidden " id="artist-names">
+                            <!-- <img src="#" class="h-14 w-14 rounded-full" alt="img" id="artist-1"/>
+                            <img src="#" class="h-14 w-14 rounded-full" alt="img" id="artist-2"/>
+                            <img src="#" class="h-14 w-14 rounded-full" alt="img" id="artist-3"/> -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- div for related songs queue  -->
+                <div class="realted-songs">
+                    <div class="">
+                        <div
+                            class="related-songs-list bg-gray-600 absolute right-14 bottom-14 h-96 w-80 p-2 rounded-3xl overflow-y-auto  overflow-x-hidden ">
+                            <h2 class="text-center p-2">Related Songs</h2>
+                            <!-- here i will generate 5 related songs dynamically -->
+                            <!-- for example -->
+                            <div class="related-song flex gap-2 justify-between p-3 items-center bg-sky-900 my-2 rounded-2xl w-[95%] mx-2"
+                                id="realated-cd-1">
+                                <img src="../Assets/Image-thumb (1).jpg" alt="img1" class="h-11 w-11 rounded-md"
+                                    id="realted-img-1">
+                                <div class="flex flex-col ">
+                                    <div id="realted-name-1" class="text-right">Song Name</div>
+                                    <div id="realated-ar-1" class="text-right">Artist Name</div>
+                                </div>
+                            </div>
+                            <div class="related-song flex gap-2 justify-between p-3 items-center bg-sky-900 my-2 rounded-2xl w-[95%] mx-2"
+                                id="realated-cd-2">
+                                <img src="../Assets/Image-thumb (2).jpg" alt="img1" class="h-11 w-11 rounded-md"
+                                    id="realted-img-2">
+                                <div class="flex flex-col ">
+                                    <div id="realted-name-2" class="text-right">Song Name</div>
+                                    <div id="realated-ar-2" class="text-right">Artist Name</div>
+                                </div>
+                            </div>
+                            <div class="related-song flex gap-2 justify-between p-3 items-center bg-sky-900 my-2 rounded-2xl w-[95%] mx-2"
+                                id="realated-cd-3">
+                                <img src="../Assets/Image-thumb (3).jpg" alt="img1" class="h-11 w-11 rounded-md"
+                                    id="realted-img-3">
+                                <div class="flex flex-col ">
+                                    <div id="realted-name-3" class="text-right">Song Name</div>
+                                    <div id="realated-ar-3" class="text-right">Artist Name</div>
+                                </div>
+                            </div>
+                            <div class="related-song flex gap-2 justify-between p-3 items-center bg-sky-900 my-2 rounded-2xl w-[95%] mx-2"
+                                id="realated-cd-4">
+                                <img src="../Assets/Image-thumb (3).jpg" alt="img1" class="h-11 w-11 rounded-md"
+                                    id="realted-img-4">
+                                <div class="flex flex-col ">
+                                    <div id="realted-name-4" class="text-right">Song Name</div>
+                                    <div id="realated-ar-4" class="text-right">Artist Name</div>
+                                </div>
+                            </div>
+                            <div class="related-song flex gap-2 justify-between p-3 items-center bg-sky-900 my-2 rounded-2xl w-[95%] mx-2"
+                                id="realated-cd-5">
+                                <img src="../Assets/Image-thumb (3).jpg" alt="img1" class="h-11 w-11 rounded-md"
+                                    id="realted-img-5">
+                                <div class="flex flex-col ">
+                                    <div id="realted-name-5" class="text-right">Song Name</div>
+                                    <div id="realated-ar-5" class="text-right">Artist Name</div>
+                                </div>
+                            </div>
+                            <div class="related-song flex gap-2 justify-between p-3 items-center bg-sky-900 my-2 rounded-2xl w-[95%] mx-2"
+                                id="realated-cd-6">
+                                <img src="../Assets/Image-thumb (3).jpg" alt="img1" class="h-11 w-11 rounded-md"
+                                    id="realted-img-6">
+                                <div class="flex flex-col ">
+                                    <div id="realted-name-6" class="text-right">Song Name</div>
+                                    <div id="realated-ar-6" class="text-right">Artist Name</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
