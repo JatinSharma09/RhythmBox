@@ -76,7 +76,7 @@ const Player = () => {
           <div className="flex items-center justify-center gap-5 md:gap-6">
             {/* Previous Button */}
             <img
-              src="../Assets/Icon-Rewind-Filled.svg"
+              src="/Assets/Icon-Rewind-Filled.svg"
               alt="Prev"
               className="h-5 w-5 md:h-5 md:w-5 hover:opacity-80 cursor-pointer"
               onClick={playPreviousSong} // Call playPreviousSong
@@ -84,14 +84,14 @@ const Player = () => {
             {/* Play/Pause Button */}
             {isPlaying ? (
               <img
-                src="../Assets/pause.svg"
+                src="/Assets/pause.svg"
                 alt="Pause"
                 className="h-7 w-7 md:h-8 md:w-8 hover:scale-110 cursor-pointer"
                 onClick={togglePlayPause}
               />
             ) : (
               <img
-                src="../Assets/Icon-Play-Filled (1).svg"
+                src="/Assets/Icon-Play-Filled (1).svg"
                 alt="Play"
                 className="h-7 w-7 md:h-8 md:w-8 hover:scale-110 cursor-pointer"
                 onClick={togglePlayPause}
@@ -99,7 +99,7 @@ const Player = () => {
             )}
             {/* Next Button */}
             <img
-              src="../Assets/Icon-Forward-Filled.svg"
+              src="/Assets/Icon-Forward-Filled.svg"
               alt="Next"
               className="h-5 w-5 md:h-5 md:w-5 hover:opacity-80 cursor-pointer"
               onClick={playNextSong} // Call playNextSong
@@ -125,7 +125,7 @@ const Player = () => {
         <div className="block md:flex items-center md:justify-end md:flex-1 gap-4">
           <div className="hidden md:flex items-center gap-2">
             <img
-              src="../Assets/Icon-Volume.svg"
+              src="/Assets/Icon-Volume.svg"
               alt="Volume"
               className="p-2 hover:bg-slate-500 rounded-xl cursor-pointer"
             />
@@ -140,7 +140,7 @@ const Player = () => {
             />
           </div>
           <img
-            src="../Assets/picture-in-picture-2.svg"
+            src="/Assets/picture-in-picture-2.svg"
             alt="FullScreen"
             className=" p-2 hover:bg-slate-500 rounded-xl transition-transform cursor-pointer"
             onClick={() => setIsFullScreen(true)}

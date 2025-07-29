@@ -100,7 +100,7 @@ const FullScreenPlayer = ({
                 <div className="flex items-center justify-center gap-5 md:gap-6">
                   {/* Previous Button */}
                   <img
-                    src="../Assets/Icon-Rewind-Filled.svg"
+                    src="/Assets/Icon-Rewind-Filled.svg"
                     alt="Prev"
                     className="h-6 w-6 md:h-5 md:w-5 hover:opacity-80 cursor-pointer"
                     onClick={playPreviousSong} // Call playPreviousSong
@@ -109,7 +109,7 @@ const FullScreenPlayer = ({
                   {/* Play/Pause Button */}
                   {isPlaying ? (
                     <img
-                      src="../Assets/pause.svg"
+                      src="/Assets/pause.svg"
                       alt="Pause"
                       className="h-10 w-10 md:h-8 md:w-8 hover:scale-110 cursor-pointer"
                       onClick={togglePlayPause}
@@ -117,7 +117,7 @@ const FullScreenPlayer = ({
                     />
                   ) : (
                     <img
-                      src="../Assets/Icon-Play-Filled (1).svg"
+                      src="/Assets/Icon-Play-Filled (1).svg"
                       alt="Play"
                       className="h-10 w-10 md:h-8 md:w-8 hover:scale-110 cursor-pointer"
                       onClick={togglePlayPause}
@@ -126,7 +126,7 @@ const FullScreenPlayer = ({
                   )}
                   {/* Next Button */}
                   <img
-                    src="../Assets/Icon-Forward-Filled.svg"
+                    src="/Assets/Icon-Forward-Filled.svg"
                     alt="Next"
                     className="h-6 w-6 md:h-5 md:w-5 hover:opacity-80 cursor-pointer"
                     onClick={playNextSong} // Call playNextSong
