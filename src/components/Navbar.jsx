@@ -1,52 +1,44 @@
 import React from 'react';
+import { MdSearch } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  return (
-    <div className="top-nav flex gap-2 justify-around md:justify-between items-center py-4 px-4 md:px-8 lg:px-12">
-      {/* Navigation Arrows */}
-      <div className="flex gap-1">
-        <div className="h-10 w-10 bg-[#1F1F22] rounded-full flex justify-center items-center hover:scale-125 transition">
-          <img src="/assets/Icon-Arrow-Left.svg" alt="left-arrow" className="h-4 w-4" />
-        </div>
+  const navigate = useNavigate();
 
-        <div
-          className="h-10 w-10 bg-[#1F1F22] rounded-full flex justify-center items-center hover:scale-125 transition"
-          id="playlistShow"
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
+  return (
+    <div className="h-16 flex items-center justify-between px-4 md:px-8 bg-transparent z-30 sticky top-0">
+      {/* Greeting */}
+      <div className="hidden md:flex items-center gap-4">
+        <h1 className="text-2xl font-display font-bold text-white tracking-tight">
+          {getGreeting()}
+        </h1>
+      </div>
+
+      {/* Search Bar */}
+      <div className="flex items-center flex-1 max-w-md mx-4 md:mx-8">
+        <div 
+          onClick={() => navigate('/explore')}
+          className="flex items-center gap-2 md:gap-3 bg-surface/50 hover:bg-surface/80 border border-white/5 rounded-full px-3 py-2 md:px-4 md:py-2.5 w-full transition-all cursor-text group"
         >
-          <img src="/assets/Icon-Arrow-Right.svg" alt="right-arrow" className="h-4 w-4" />
+          <MdSearch className="text-gray-400 group-hover:text-white transition-colors flex-shrink-0" size={20} />
+          <span className="text-xs md:text-sm text-gray-400 font-medium group-hover:text-white transition-colors truncate">
+            Search songs...
+          </span>
         </div>
       </div>
 
-      {/* Search and Button */}
-      <div className="flex items-center gap-2">
-        {/* Search Bar */}
-        <div className="relative w-[200px] sm:w-[260px] md:w-[300px] lg:w-[365px]">
-          <input
-            type="text"
-            placeholder="Search"
-            id="search-box"
-            className="h-9 w-full rounded-xl outline-none p-3 bg-[#1F1F22] border border-[#ebebff10] pl-8 text-sm text-white"
-          />
-          <div className="absolute inset-y-0 left-0 pl-2 flex items-center">
-            <img src="/assets/Search.svg" className="h-4 w-4" alt="search" />
-          </div>
-
-          {/* Suggestions Dropdown */}
-          <ul
-            id="suggestions"
-            className="absolute bg-[#303031] w-full p-2 rounded-lg shadow-lg mt-1 max-h-40 overflow-y-auto z-10 hidden"
-          ></ul>
-        </div>
-
-        {/* Icon Button */}
-        {/* <div className="h-10 w-10 bg-[#1F1F22] rounded-full flex justify-center items-center">
-          <img
-            src="/assets/Icon-Arrow-Left.svg"
-            alt="left-arrow"
-            className="h-4 w-4"
-            id="search-btn"
-          />
-        </div> */}
+      {/* Right Side Actions */}
+      <div className="flex items-center gap-4">
+        <button className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-surface hover:bg-white/10 transition-colors border border-white/5">
+          <span className="font-bold text-xs text-primary">JS</span>
+        </button>
       </div>
     </div>
   );

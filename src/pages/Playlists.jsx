@@ -1,155 +1,229 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
-import axios from 'axios';
-import { PlayerContext } from '../context/PlayerContext'; // Adjust path as needed
-import { FaSpinner } from 'react-icons/fa'; // For loading icon
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { PlayerContext } from "../context/PlayerContext";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import CardSkeleton from "../components/CardSkeleton";
+import PlaylistCard from "../components/PlaylistCard";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Helper component for a single playlist card
-const PlaylistCard = React.memo(({ playlist, onPlaylistClick }) => {
-  // console.log("Playlist Card Rendered");
-  // Ensure we get a good quality image, fallback to placeholder
-  const imageUrl = playlist.image && playlist.image.length > 0
-    ? playlist.image[playlist.image.length - 1].url // Get the largest available image
-    : `https://placehold.co/170x170/333333/FFFFFF?text=Playlist`;
+// Pure Component handling display
+export const PlaylistsContent = React.memo(({
+  className,
+  compact = false,
+  title,
+  homePlaylists,
+  loading,
+  cleanTitle
+}) => {
+  const navigate = useNavigate();
 
+  // Pagination state for compact mode
+  const [currentPage, setCurrentPage] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const cardsPerPage = 4;
+
+  const handlePlaylistClick = (playlist) => {
+    navigate(`/playlist/${playlist.id}`, { state: { playlist } });
+  };
+
+  const totalPages = Math.ceil((homePlaylists?.length || 0) / cardsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setDirection(1);
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 0) {
+      setDirection(-1);
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
+  const currentCards = homePlaylists?.slice(
+    currentPage * cardsPerPage,
+    (currentPage + 1) * cardsPerPage
+  ) || [];
+
+  const variants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      x: direction > 0 ? -50 : 50,
+      opacity: 0,
+    }),
+  };
+
+  if (loading && (!homePlaylists || homePlaylists.length === 0)) {
+    if (compact) {
+      return (
+        <div className={`w-full ${className}`}>
+          {/* Header Skeleton */}
+          {title && (
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-white tracking-tight">
+                {title}
+              </h2>
+            </div>
+          )}
+
+          {/* Mobile Skeleton */}
+          <div className="sm:hidden flex flex-col gap-1">
+            {[...Array(4)].map((_, i) => (
+              <CardSkeleton key={i} compact={true} />
+            ))}
+          </div>
+
+          {/* Desktop Skeleton - Horizontal */}
+          <div className="hidden sm:flex overflow-x-hidden gap-3 pb-2">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex-shrink-0 w-32">
+                <CardSkeleton compact={false} />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className={`w-full ${className}`}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4 mb-40">
+          {[...Array(12)].map((_, i) => (
+            <CardSkeleton key={i} compact={false} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Compact mode for Home page
+  if (compact) {
+    return (
+      <div className={`w-full ${className}`}>
+        {/* Header Section */}
+        {title && (
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-white tracking-tight">
+              {title}
+            </h2>
+
+            {/* Mobile Arrows (Inline with header) */}
+            <div className="sm:hidden flex items-center gap-2">
+              {homePlaylists?.length > cardsPerPage && (
+                <>
+                  <button
+                    onClick={prevPage}
+                    disabled={currentPage === 0}
+                    className={`p-1 rounded-full transition-colors border border-white/10 ${currentPage === 0
+                      ? 'text-gray-600 cursor-not-allowed'
+                      : 'text-white hover:bg-white/10'
+                      }`}
+                    aria-label="Previous playlist page"
+                  >
+                    <MdChevronLeft size={22} />
+                  </button>
+                  <button
+                    onClick={nextPage}
+                    disabled={currentPage >= totalPages - 1}
+                    className={`p-1 rounded-full transition-colors border border-white/10 ${currentPage >= totalPages - 1
+                      ? 'text-gray-600 cursor-not-allowed'
+                      : 'text-white hover:bg-white/10'
+                      }`}
+                    aria-label="Next playlist page"
+                  >
+                    <MdChevronRight size={22} />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Mobile: Compact List (4 items) */}
+        <AnimatePresence mode="wait" custom={direction} initial={false}>
+          <motion.div
+            key={`mobile-playlist-${currentPage}`}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: "tween", ease: "easeInOut", duration: 0.2 }}
+            className="sm:hidden flex flex-col gap-1"
+          >
+            {currentCards.map((playlist) => (
+              <PlaylistCard
+                key={playlist.id}
+                playlist={playlist}
+                compact={true}
+                onClick={handlePlaylistClick}
+                cleanTitle={cleanTitle}
+              />
+            ))}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Desktop: Horizontal Scroll */}
+        <div className="hidden sm:flex overflow-x-auto gap-3 no-scrollbar pb-2">
+          {homePlaylists?.slice(0, 8).map((playlist) => (
+            <div key={playlist.id} className="flex-shrink-0 w-32">
+              <PlaylistCard
+                playlist={playlist}
+                compact={false}
+                onClick={handlePlaylistClick}
+                cleanTitle={cleanTitle}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Full mode for Playlists page
   return (
-    <div
-      className="bg-[#111] hover:bg-[#1c1c1c] transition duration-300 rounded-lg overflow-hidden p-3 cursor-pointer w-full max-w-[170px] hover:scale-105 flex flex-col items-center text-center"
-      onClick={() => onPlaylistClick(playlist)}
-    >
-      <img
-        src={imageUrl}
-        alt={playlist.name || playlist.title}
-        className="w-full h-[170px] rounded-md object-cover mb-3"
-      />
-      <h3 className="font-bold text-sm text-white truncate w-full px-1">
-        {playlist.name || playlist.title}
-      </h3>
-      <p className="text-xs text-gray-400 truncate w-full px-1">
-        {playlist.language || playlist.description || 'Playlist'}
-      </p>
+    <div className={`w-full ${className}`}>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4 mb-40">
+        {homePlaylists?.map((playlist) => (
+          <PlaylistCard
+            key={playlist.id}
+            playlist={playlist}
+            compact={false}
+            onClick={handlePlaylistClick}
+            cleanTitle={cleanTitle}
+          />
+        ))}
+      </div>
+
+      {(!homePlaylists || homePlaylists.length === 0) && (
+        <div className="text-gray-400 text-center py-10">
+          No playlists found.
+        </div>
+      )}
     </div>
   );
 });
 
-const Playlists = ({className}) => {
-  const [playlists, setPlaylists] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Access playSong and setQueue from PlayerContext
-  const { playSong, setQueue, queue, cleanTitle } = useContext(PlayerContext);
-
-  // Define the list of playlist names to search for
-  const playListNames = ['most-searched-songs-hindi', 'monsoon', 'Top 50', 'viralnation', 'taaza-tunes','badshah', 'lets-play-arijit-singh-hindi', 'bhojpuri hits', 'bhakti','indie pop', '90s', '80s'];
-
-  // Function to fetch all playlists
-  const fetchPlaylists = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    const fetchedPlaylistsData = [];
-
-    for (const name of playListNames) {
-      try {
-        // Step 1: Search for the playlist to get its full URL/link
-        const searchResponse = await axios.get(`https://saavanapi-mu.vercel.app/api/search?query=${encodeURIComponent(name)}`);
-        const playlistResult = searchResponse.data?.data?.playlists?.results?.[0]; // Get the first playlist result
-
-        if (playlistResult && playlistResult.url) {
-          // Step 2: Fetch the actual playlist details (songs) using the link
-          const playlistContentResponse = await axios.get(`https://saavanapi-mu.vercel.app/api/playlists?link=${encodeURIComponent(playlistResult.url)}&limit=50`);
-          const fullPlaylistData = playlistContentResponse.data?.data;
-
-          if (fullPlaylistData && fullPlaylistData.songs) {
-            fetchedPlaylistsData.push({
-              id: playlistResult.id,
-              title: playlistResult.title,
-              name: playlistResult.name || playlistResult.title,
-              image: playlistResult.image,
-              language: playlistResult.language,
-              url: playlistResult.url,
-              songs: fullPlaylistData.songs, // Store the actual songs for later playback
-            });
-          }
-        }
-      } catch (err) {
-        console.error(`Failed to fetch playlist for "${name}":`, err);
-      }
-    }
-    setPlaylists(fetchedPlaylistsData);
-    setLoading(false);
-  }, []);
-
-  // Effect to run the fetch function on component mount
-  useEffect(() => {
-    fetchPlaylists();
-  }, [fetchPlaylists]);
-
-  // Handler for when a playlist card is clicked
-  const handlePlaylistClick = useCallback((playlist) => {
-    // console.log(playlist);
-    
-    if (playlist.songs && playlist.songs.length > 0) {
-      // 1. Set the entire playlist's songs as the new queue in PlayerContext
-      
-      setQueue(playlist.songs.map(song => ({
-        id: song.id,
-        title: song.name, // Use 'name' from API response for queue
-        artist: song.artists?.primary?.[0]?.name || "Unknown Artist",
-        album: song.album?.name || "Unknown Album",
-        image: song.image?.[2]?.url,
-        url: song.downloadUrl?.[4]?.url,
-      })));
-
-      // 2. Start playing the first song of the playlist
-      // The playSong function will automatically find its index in the newly set queue
-      playSong({
-        id: playlist.songs[0].id,
-        title: playlist.songs[0].name,
-        artist: playlist.songs[0].artists?.primary?.[0]?.name || "Unknown Artist",
-        album: playlist.songs[0].album?.name || "Unknown Album",
-        image: playlist.songs[0].image?.[2]?.url,
-        url: playlist.songs[0].downloadUrl?.[4]?.url,
-      });
-    } else {
-      console.warn(`Playlist "${playlist.name}" has no songs to play.`);
-    }
-  }, [setQueue, playSong]); // Dependencies from context
-  // console.log(queue);
-  
+// Container Component connecting to Context
+const Playlists = (props) => {
+  const { cleanTitle, homePlaylists, loading } = useContext(PlayerContext);
 
   return (
-    <div className="p-4 md:p-8 bg-black h-[130vh] md:h-auto  md:h-full md:min-h-screen text-white">
-      <h2 className={`text-3xl font-bold mb-6 ${className}`}>Explore Playlists</h2>
-
-      {loading && (
-        <div className="flex justify-center items-center h-40">
-          <FaSpinner className="animate-spin text-green-500 text-4xl" />
-          <p className="ml-3 text-lg">Loading playlists...</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="text-red-500 text-center text-lg mt-4">{error}</div>
-      )}
-
-      {!loading && !error && playlists.length === 0 && (
-        <p className="text-center text-gray-400 text-lg mt-8">
-          No playlists found.
-        </p>
-      )}
-
-      {!loading && !error && playlists.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {playlists.map((playlist) => (
-            <PlaylistCard
-              key={playlist.id || playlist.name}
-              playlist={playlist}
-              onPlaylistClick={handlePlaylistClick}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+    <PlaylistsContent
+      {...props}
+      cleanTitle={cleanTitle}
+      homePlaylists={homePlaylists}
+      loading={loading}
+    />
   );
 };
 

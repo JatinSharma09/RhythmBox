@@ -1,32 +1,40 @@
 import React, { useContext } from "react";
 import CardGrid from "../components/Cardgrid";
 import { PlayerContext } from "../context/PlayerContext";
-import Playlists from "./Playlists";
+import Playlists, { PlaylistsContent } from "./Playlists";
 import { FaSpinner } from "react-icons/fa";
 
 const Home = () => {
-  const { songs, loading, error } = useContext(PlayerContext);
+  const { songs, loading, error, playSong, cleanTitle, homePlaylists } = useContext(PlayerContext);
 
   return (
-    <div className="flex flex-col h-auto flex-1 md:h-[110vh]">
-      <div className="flex flex-col gap-4 p-5">
-        <div className="text-white text-2xl font-bold">Trending Now</div>
-
-        {loading ? (
-          <div className="flex flex-col items-center justify-center">
-          <FaSpinner className="animate-spin text-green-500 text-4xl" />
-          <div className="text-white">Loading...</div>
+    <div className="flex flex-col h-full flex-1 overflow-y-auto bg-background pb-24 md:pb-0">
+      {/* Hero Section / Trending */}
+      <div className="flex flex-col p-6 md:p-6">
+        {error ? (
+          <div className="text-red-400 bg-red-500/10 p-4 rounded-xl border border-red-500/20 text-center">
+            {error}
           </div>
-        ) : error ? (
-          <div className="text-red-500">{error}</div>
         ) : (
-          <CardGrid Data={songs} />
+          <CardGrid
+            Data={songs}
+            title="Trending Now"
+            loading={loading}
+            playSong={playSong}
+            cleanTitle={cleanTitle}
+          />
         )}
       </div>
 
-      <div className="flex flex-col gap-4 p-2">
-        <div className="text-white text-2xl font-bold px-3">Playlists</div>
-        <Playlists className="hidden" />
+      {/* Playlists Section */}
+      <div className="flex flex-col gap-6 p-6 md:p-6 pt-0 mb-16">
+        <PlaylistsContent
+          compact={true}
+          title="Playlists"
+          homePlaylists={homePlaylists}
+          loading={loading}
+          cleanTitle={cleanTitle}
+        />
       </div>
     </div>
   );

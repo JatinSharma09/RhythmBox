@@ -8,43 +8,28 @@ import React, {
 } from "react";
 import axios from "axios";
 import { AudioPlaybackStateContext } from './AudioPlaybackStateContext';
+import { useToast } from './ToastContext';
 
-// /**
-//  * @typedef {Object} SongData
-//  * @property {string} id
-//  * @property {string} title
-//  * @property {string} artist
-//  * @property {string} album
-//  * @property {string} image
-//  * @property {string} url
-//  */
-
-// /**
-//  * Main context for the music player, managing core player controls,
-//  * current song information, and overall application state (songs list, loading).
-//  * This context provides values that change less frequently.
-//  *
-//  * @type {React.Context<Object>}
-//  */
 export const PlayerContext = createContext();
-
 export const PlayerProvider = ({ children }) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [volume, setVolume] = useState(1);
+  const [volume, setVolume] = useState(() => {
+    const saved = localStorage.getItem("rhythmbox_volume");
+    return saved ? parseFloat(saved) : 1;
+  });
   const [queue, setQueue] = useState([]);
   const [currentSongIndex, setCurrentSongIndex] = useState(-1);
   const [currentSong, setCurrentSong] = useState(
     {
       // Default song state
       id: "",
-      title: "Shaky",
-      artist: "Sanju Rathod",
-      album: "Coexist",
-      image:
-        "https://c.saavncdn.com/634/Shaky-Marathi-2025-20250422143320-500x500.jpg",
-      url: "http://aac.saavncdn.com/634/c19474e494116361fddf2e6db2ffed64_320.mp4",
+      title: "",
+      artist: "",
+      album: "",
+      image: "null",
+      url: "null",
     }
   );
 
@@ -58,24 +43,159 @@ export const PlayerProvider = ({ children }) => {
 
   // Home Page Data State
   const [songs, setSongs] = useState([]);
+  const [homePlaylists, setHomePlaylists] = useState([]); // Cached playlists
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Effect to fetch initial song data when the component mounts
+  const [shuffle, setShuffle] = useState(() => {
+    return localStorage.getItem("rhythmbox_shuffle") === "true";
+  });
+  const [repeat, setRepeat] = useState(() => {
+    const saved = localStorage.getItem("rhythmbox_repeat");
+    return saved ? parseInt(saved) : 0;
+  }); // 0: off, 1: all, 2: one
+
+  // --- User Data Persistence (History, Favorites, Playlists) ---
+  const [history, setHistory] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
+  const [searchHistory, setSearchHistory] = useState([]);
+
+  // Toast Hook
+  const { addToast } = useToast();
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("rhythmbox_history");
+    const savedFavorites = localStorage.getItem("rhythmbox_favorites");
+    const savedPlaylists = localStorage.getItem("rhythmbox_playlists");
+
+    if (savedHistory) setHistory(JSON.parse(savedHistory));
+    if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+    if (savedPlaylists) setPlaylists(JSON.parse(savedPlaylists));
+
+    const savedSearchHistory = localStorage.getItem("rhythmbox_search_history");
+    if (savedSearchHistory) setSearchHistory(JSON.parse(savedSearchHistory));
+  }, []);
+
+  // Save Player State Persistence
+  useEffect(() => {
+    localStorage.setItem("rhythmbox_volume", volume.toString());
+  }, [volume]);
+
+  useEffect(() => {
+    localStorage.setItem("rhythmbox_shuffle", shuffle.toString());
+  }, [shuffle]);
+
+  useEffect(() => {
+    localStorage.setItem("rhythmbox_repeat", repeat.toString());
+  }, [repeat]);
+
+  // Save data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("rhythmbox_history", JSON.stringify(history));
+  }, [history]);
+
+  useEffect(() => {
+    localStorage.setItem("rhythmbox_favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
+    localStorage.setItem("rhythmbox_playlists", JSON.stringify(playlists));
+  }, [playlists]);
+
+  useEffect(() => {
+    localStorage.setItem("rhythmbox_search_history", JSON.stringify(searchHistory));
+  }, [searchHistory]);
+
+  const addToHistory = useCallback((song) => {
+    setHistory((prev) => {
+      const newHistory = [song, ...prev.filter((s) => s.id !== song.id)].slice(0, 50); // Keep last 50 songs
+      return newHistory;
+    });
+  }, []);
+
+  const toggleFavorite = useCallback((song) => {
+    setFavorites((prev) => {
+      const isFavorite = prev.some((s) => s.id === song.id);
+      if (isFavorite) {
+        addToast("Removed from Favorites", "info");
+        return prev.filter((s) => s.id !== song.id);
+      } else {
+        addToast("Added to Favorites", "success");
+        return [song, ...prev];
+      }
+    });
+  }, [addToast]);
+
+  const createPlaylist = useCallback((name) => {
+    const newPlaylist = {
+      id: Date.now().toString(),
+      name,
+      songs: [],
+    };
+    setPlaylists((prev) => [...prev, newPlaylist]);
+    addToast(`Playlist "${name}" created`, "success");
+  }, [addToast]);
+
+  const addToPlaylist = useCallback((playlistId, song) => {
+    setPlaylists((prev) =>
+      prev.map((pl) => {
+        if (pl.id === playlistId) {
+          // Check for duplicates if needed, or allow them
+          return { ...pl, songs: [...pl.songs, song] };
+        }
+        return pl;
+      })
+    );
+    addToast("Added to playlist", "success");
+  }, [addToast]);
+
+  const removeFromPlaylist = useCallback((playlistId, songId) => {
+    setPlaylists((prev) =>
+      prev.map((pl) =>
+        pl.id === playlistId
+          ? { ...pl, songs: pl.songs.filter((s) => s.id !== songId) }
+          : pl
+      )
+    );
+  }, []);
+
+  const deletePlaylist = useCallback((playlistId) => {
+    setPlaylists((prev) => prev.filter((pl) => pl.id !== playlistId));
+  }, []);
+
+  const addToSearchHistory = useCallback((query) => {
+    setSearchHistory((prev) => {
+      const newHistory = [query, ...prev.filter((q) => q !== query)].slice(0, 10); // Keep last 10 searches
+      return newHistory;
+    });
+  }, []);
+
+  const removeFromSearchHistory = useCallback((query) => {
+    setSearchHistory((prev) => prev.filter((q) => q !== query));
+  }, []);
+
+  // Home Page Data State
+
+
+  // ... (existing state)
+
+  // Effect to fetch initial song data and playlists when the component mounts
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
+        setLoading(true);
+
+        // 1. Fetch Trending Songs
         const response = await axios.get(
           "https://saavanapi-mu.vercel.app/api/playlists?link=https://www.jiosaavn.com/featured/trending-today/I3kvhipIy73uCJW60TJk1Q__&limit=50"
         );
         const fetchedSongs = response.data?.data.songs || [];
         setSongs(fetchedSongs);
-        setQueue(fetchedSongs); // Populate queue with fetched songs
+        setQueue(fetchedSongs);
 
-        // Optionally, if you want the first song from the fetched list to be the current song
-        // and ready to play, you can set it here.
         if (fetchedSongs.length > 0) {
-          // Map fetched song to SongData format
           const firstSong = {
             id: fetchedSongs[0].id,
             title: fetchedSongs[0].name,
@@ -85,16 +205,62 @@ export const PlayerProvider = ({ children }) => {
             url: fetchedSongs[0].downloadUrl?.[4]?.url,
           };
           setCurrentSong(firstSong);
-          setCurrentSongIndex(0); // Set initial index
+          setCurrentSongIndex(0);
         }
+
+        // 2. Fetch Playlists (Cached)
+        const playlistNames = [
+          'most-searched-songs-hindi',
+          'monsoon',
+          'Top 50',
+          'viralnation',
+          'taaza-tunes',
+          'badshah',
+          'lets-play-arijit-singh-hindi',
+          'bhojpuri hits',
+          'bhakti',
+          'indie pop',
+          '90s',
+          '80s'
+        ];
+
+        const fetchedPlaylists = [];
+        for (const name of playlistNames) {
+          try {
+            const searchResponse = await axios.get(`https://saavanapi-mu.vercel.app/api/search?query=${encodeURIComponent(name)}`);
+            const playlistResult = searchResponse.data?.data?.playlists?.results?.[0];
+
+            if (playlistResult && playlistResult.url) {
+              const playlistContentResponse = await axios.get(`https://saavanapi-mu.vercel.app/api/playlists?link=${encodeURIComponent(playlistResult.url)}&limit=50`);
+              const fullPlaylistData = playlistContentResponse.data?.data;
+
+              if (fullPlaylistData) {
+                fetchedPlaylists.push({
+                  id: fullPlaylistData.id || playlistResult.id,
+                  name: fullPlaylistData.name || playlistResult.name,
+                  image: fullPlaylistData.image?.[2]?.url || fullPlaylistData.image?.[0]?.url || playlistResult.image?.[2]?.url,
+                  songs: fullPlaylistData.songs || [],
+                  songCount: fullPlaylistData.songCount || fullPlaylistData.songs?.length || 0,
+                  url: playlistResult.url,
+                });
+              }
+            }
+          } catch (err) {
+            console.error(`Error fetching playlist ${name}:`, err);
+          }
+        }
+
+        const uniquePlaylists = Array.from(new Map(fetchedPlaylists.map(item => [item.id, item])).values());
+        setHomePlaylists(uniquePlaylists);
 
         setLoading(false);
       } catch (error) {
-        console.error("Failed to fetch songs:", error);
-        setError("Failed to fetch songs");
-        setLoading(false); // Ensure loading is set to false even on error
+        console.error("Failed to fetch home data:", error);
+        setError("Failed to fetch data");
+        setLoading(false);
       }
     };
+
     fetchHomeData();
   }, []); // Empty dependency array means this runs once on mount
 
@@ -144,10 +310,9 @@ export const PlayerProvider = ({ children }) => {
     setIsPlaying(true);
 
     const foundIndex = queue.findIndex(qSong => qSong.id === song.id);
-    // console.log(foundIndex);
-    
     setCurrentSongIndex(foundIndex);
-  }, [queue]); // queue is a dependency because findIndex depends on it
+    addToHistory(song); // Add to history
+  }, [queue, addToHistory]); // queue is a dependency because findIndex depends on it
 
   // Callback for when audio metadata is loaded (e.g., duration becomes available)
   const handleLoadedMetadata = useCallback(() => {
@@ -164,9 +329,25 @@ export const PlayerProvider = ({ children }) => {
       return;
     }
 
-    const nextIndex = currentSongIndex + 1;
-    // console.log(currentSongIndex);
-    
+    let nextIndex = currentSongIndex + 1;
+
+    // Handle Shuffle
+    if (shuffle) {
+      nextIndex = Math.floor(Math.random() * queue.length);
+    }
+
+    // Handle Repeat
+    if (repeat === 2) { // Repeat One
+      nextIndex = currentSongIndex;
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+        return;
+      }
+    } else if (repeat === 1 && nextIndex >= queue.length) { // Repeat All
+      nextIndex = 0;
+    }
+
     if (nextIndex < queue.length) {
       // Map the song from the queue to the expected SongData format
       const nextSong = {
@@ -177,20 +358,21 @@ export const PlayerProvider = ({ children }) => {
         image: queue[nextIndex].image?.[2]?.url || queue[nextIndex]?.image,
         url: queue[nextIndex].downloadUrl?.[4]?.url || queue[nextIndex]?.url,
       };
-      playSong(nextSong); // Use playSong to handle setting currentSong and isPlaying
-      setCurrentSongIndex(nextIndex); // Explicitly update index
+
+      fadeOut(() => {
+        playSong(nextSong); // Use playSong to handle setting currentSong and isPlaying
+        setCurrentSongIndex(nextIndex); // Explicitly update index
+        // fadeIn is handled in the main useEffect when isPlaying becomes true or song changes
+        setTimeout(fadeIn, 200); // Small delay to ensure new source is loaded
+      });
     } else {
       // End of queue: stop playback and reset index
       setIsPlaying(false);
       setCurrentTime(0); // Reset time
       setCurrentSongIndex(-1); // No song currently selected
-      // Optional: If you want to loop back to the first song:
-      // if (queue.length > 0) {
-      //   playSong(queue[0]);
-      //   setCurrentSongIndex(0);
-      // }
+
     }
-  }, [currentSongIndex, queue, playSong, setCurrentTime]);
+  }, [currentSongIndex, queue, playSong, setCurrentTime, shuffle, repeat]);
 
   // NEW: Function to play the previous song in the queue
   const playPreviousSong = useCallback(() => {
@@ -200,7 +382,12 @@ export const PlayerProvider = ({ children }) => {
       return;
     }
 
-    const prevIndex = currentSongIndex - 1;
+    let prevIndex = currentSongIndex - 1;
+
+    if (repeat === 1 && prevIndex < 0) {
+      prevIndex = queue.length - 1;
+    }
+
     if (prevIndex >= 0) {
       // Map the song from the queue to the expected SongData format
       const prevSong = {
@@ -211,20 +398,19 @@ export const PlayerProvider = ({ children }) => {
         image: queue[prevIndex].image?.[2]?.url,
         url: queue[prevIndex].downloadUrl?.[4]?.url,
       };
-      playSong(prevSong); // Use playSong to handle setting currentSong and isPlaying
-      setCurrentSongIndex(prevIndex); // Explicitly update index
+
+      fadeOut(() => {
+        playSong(prevSong); // Use playSong to handle setting currentSong and isPlaying
+        setCurrentSongIndex(prevIndex); // Explicitly update index
+        setTimeout(fadeIn, 200);
+      });
     } else {
       // Beginning of queue: stop playback and reset index
       setIsPlaying(false);
       setCurrentTime(0); // Reset time
       setCurrentSongIndex(-1); // No song currently selected
-      // Optional: If you want to loop back to the last song:
-      // if (queue.length > 0) {
-      //   playSong(queue[queue.length - 1]);
-      //   setCurrentSongIndex(queue.length - 1);
-      // }
     }
-  }, [currentSongIndex, queue, playSong, setCurrentTime]);
+  }, [currentSongIndex, queue, playSong, setCurrentTime, repeat]);
 
   // Callback for when the current song finishes playing
   // Now automatically plays the next song
@@ -234,14 +420,94 @@ export const PlayerProvider = ({ children }) => {
 
   // Callback to clean up song titles (e.g., remove parenthesized content)
   const cleanTitle = useCallback((title) => {
-    let cleanedTitle = title.replace(/&quot;/g, '"');
+    if (!title) return "";
+    let cleanedTitle = String(title).replace(/&quot;/g, '"');
     cleanedTitle = cleanedTitle.replace(/\s*\(.*?\)\s*/g, "").trim();
     return cleanedTitle;
   }, []);
 
-  // console.log("This component is is rendering");
+  const addToQueue = useCallback((song) => {
+    setQueue((prev) => [...prev, song]);
+    addToast("Added to queue", "success");
+  }, [addToast]);
 
-   // --- Media Session API Integration ---
+  const removeFromQueue = useCallback((index) => {
+    setQueue((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const reorderQueue = useCallback((newQueue) => {
+    setQueue(newQueue);
+  }, []);
+
+  const toggleShuffle = useCallback(() => {
+    setShuffle((prev) => !prev);
+  }, []);
+
+  const toggleRepeat = useCallback(() => {
+    setRepeat((prev) => (prev + 1) % 3);
+  }, []);
+
+  // --- Playback Speed ---
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+
+  const changePlaybackSpeed = useCallback((speed) => {
+    setPlaybackSpeed(speed);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = speed;
+    }
+  }, []);
+
+  // Ensure playback speed is applied when audio element updates or song changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackSpeed;
+    }
+  }, [currentSong, playbackSpeed]);
+
+  // --- Crossfade Logic ---
+  const [crossfadeEnabled, setCrossfadeEnabled] = useState(true);
+  const CROSSFADE_DURATION = 1000; // 1 second
+
+  const fadeOut = (callback) => {
+    if (!crossfadeEnabled || !audioRef.current) {
+      callback();
+      return;
+    }
+
+    const audio = audioRef.current;
+    const originalVolume = volume;
+    const step = originalVolume / (CROSSFADE_DURATION / 50);
+
+    const fadeInterval = setInterval(() => {
+      if (audio.volume > step) {
+        audio.volume -= step;
+      } else {
+        audio.volume = 0;
+        clearInterval(fadeInterval);
+        callback();
+      }
+    }, 50);
+  };
+
+  const fadeIn = () => {
+    if (!crossfadeEnabled || !audioRef.current) return;
+
+    const audio = audioRef.current;
+    const targetVolume = volume;
+    audio.volume = 0;
+    const step = targetVolume / (CROSSFADE_DURATION / 50);
+
+    const fadeInterval = setInterval(() => {
+      if (audio.volume < targetVolume - step) {
+        audio.volume += step;
+      } else {
+        audio.volume = targetVolume;
+        clearInterval(fadeInterval);
+      }
+    }, 50);
+  };
+
+  // --- Media Session API Integration ---
   useEffect(() => {
     if ('mediaSession' in navigator) {
       // 1. Update Metadata when currentSong changes
@@ -262,52 +528,85 @@ export const PlayerProvider = ({ children }) => {
       navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
 
       // 3. Set Action Handlers (only set once, they persist)
-      navigator.mediaSession.setActionHandler('play', () => {
-        togglePlayPause();
-      });
+      const actionHandlers = [
+        ['play', togglePlayPause],
+        ['pause', togglePlayPause],
+        ['previoustrack', playPreviousSong],
+        ['nexttrack', playNextSong],
+        ['stop', () => {
+          setIsPlaying(false);
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }],
+      ];
 
-      navigator.mediaSession.setActionHandler('pause', () => {
-        togglePlayPause();
+      actionHandlers.forEach(([action, handler]) => {
+        try {
+          navigator.mediaSession.setActionHandler(action, handler);
+        } catch (error) {
+          console.warn(`Media Session API action "${action}" is not supported.`);
+        }
       });
-
-      navigator.mediaSession.setActionHandler('nexttrack', () => {
-        playNextSong();
-      });
-
-      navigator.mediaSession.setActionHandler('previoustrack', () => {
-        playPreviousSong();
-      });
-
-      // Optional: Add seek action handlers if you have seek functionality
-      
-      // navigator.mediaSession.setActionHandler('seekbackward', (event) => {
-      //   audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - (event.seekOffset || 10));
-      // });
-      // navigator.mediaSession.setActionHandler('seekforward', (event) => {
-      //   audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + (event.seekOffset || 10));
-      // });
-      // navigator.mediaSession.setActionHandler('seekto', (event) => {
-      //   if (event.fastSeek && 'fastSeek' in audioRef.current) {
-      //     audioRef.current.fastSeek(event.seekTime);
-      //     return;
-      //   }
-      //   audioRef.current.currentTime = event.seekTime;
-      // });
-     
 
       // Clean up on component unmount
       return () => {
         if ('mediaSession' in navigator) {
-          navigator.mediaSession.setActionHandler('play', null);
-          navigator.mediaSession.setActionHandler('pause', null);
-          navigator.mediaSession.setActionHandler('nexttrack', null);
-          navigator.mediaSession.setActionHandler('previoustrack', null);
+          actionHandlers.forEach(([action]) => {
+            try {
+              navigator.mediaSession.setActionHandler(action, null);
+            } catch (e) { /* ignore */ }
+          });
           navigator.mediaSession.metadata = null;
           navigator.mediaSession.playbackState = 'none';
         }
       };
     }
-  }, [currentSong, isPlaying, togglePlayPause, playNextSong, playPreviousSong, cleanTitle, audioRef]);
+  }, [currentSong, isPlaying, togglePlayPause, playNextSong, playPreviousSong, cleanTitle]);
+
+  // --- Global Keyboard Shortcuts ---
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore if user is typing in an input or textarea
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+      switch (e.code) {
+        case 'Space':
+          e.preventDefault(); // Prevent scrolling
+          togglePlayPause();
+          break;
+        case 'ArrowRight':
+          if (e.ctrlKey || e.metaKey) {
+            playNextSong();
+          } else {
+            if (audioRef.current) audioRef.current.currentTime += 5;
+          }
+          break;
+        case 'ArrowLeft':
+          if (e.ctrlKey || e.metaKey) {
+            playPreviousSong();
+          } else {
+            if (audioRef.current) audioRef.current.currentTime -= 5;
+          }
+          break;
+        case 'ArrowUp':
+          e.preventDefault(); // Prevent scrolling
+          setVolume(prev => Math.min(prev + 0.1, 1));
+          break;
+        case 'ArrowDown':
+          e.preventDefault(); // Prevent scrolling
+          setVolume(prev => Math.max(prev - 0.1, 0));
+          break;
+        case 'KeyM':
+          setVolume(prev => (prev > 0 ? 0 : 1));
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [togglePlayPause, playNextSong, playPreviousSong]);
 
   // Memoized value for the main PlayerContext.
   const mainPlayerContextValue = useMemo(() => ({
@@ -320,6 +619,7 @@ export const PlayerProvider = ({ children }) => {
     currentSong,
     currentSongIndex, // Expose currentSongIndex
     songs,
+    homePlaylists, // Expose cached playlists
     loading,
     error,
     queue,
@@ -329,6 +629,29 @@ export const PlayerProvider = ({ children }) => {
     playNextSong,     // Expose next song function
     playPreviousSong, // Expose previous song function
     cleanTitle,
+    shuffle,
+    repeat,
+    addToQueue,
+    removeFromQueue,
+    reorderQueue,
+    toggleShuffle,
+    toggleRepeat,
+    playbackSpeed,
+    changePlaybackSpeed,
+    crossfadeEnabled,
+    setCrossfadeEnabled,
+    history,
+    addToHistory,
+    favorites,
+    toggleFavorite,
+    playlists,
+    createPlaylist,
+    addToPlaylist,
+    removeFromPlaylist,
+    deletePlaylist,
+    searchHistory,
+    addToSearchHistory,
+    removeFromSearchHistory,
   }), [
     isPlaying,
     isFullScreen,
@@ -338,6 +661,7 @@ export const PlayerProvider = ({ children }) => {
     currentSong,
     currentSongIndex, // Dependency
     songs,
+    homePlaylists,
     loading,
     error,
     queue,
@@ -347,6 +671,29 @@ export const PlayerProvider = ({ children }) => {
     playNextSong,
     playPreviousSong,
     cleanTitle,
+    shuffle,
+    repeat,
+    addToQueue,
+    removeFromQueue,
+    reorderQueue,
+    toggleShuffle,
+    toggleRepeat,
+    playbackSpeed,
+    changePlaybackSpeed,
+    crossfadeEnabled,
+    setCrossfadeEnabled,
+    history,
+    addToHistory,
+    favorites,
+    toggleFavorite,
+    playlists,
+    createPlaylist,
+    addToPlaylist,
+    removeFromPlaylist,
+    deletePlaylist,
+    searchHistory,
+    addToSearchHistory,
+    removeFromSearchHistory,
   ]);
 
   // Memoized value for the AudioPlaybackStateContext.
